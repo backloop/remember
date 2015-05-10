@@ -6,14 +6,14 @@ The tool is excuted on the OFFISTE_SERVER and sets up a persistent reverse SSH t
 
 Essentially this sets up a "call home" feature.
 
-### Example:
+### Example
 The OFFSITE_SERVER is an off-site backup server located somewhere far away and the ONSITE_SERVER is a file server on your home or office LAN.
 
-### Pre-requisites:
+### Pre-requisites
 * autossh package must be installed
 * Automated login from OFFISTE_SERVER to ONSITE_SERVER must be configured (public keys must be shared from OFFISTE_SERVER to ONSITE_SERVER and known_hosts file on OFFSITE_SERVER must be updated with ONSITE_SERVER's public credentials). The most straight forward method is to manually configure a normal ssh login from OFFSITE_SERVER to ONSITE_SERVER that can be performed without user interaction.  
 
-### Installationon on OFFSITE_SERVER:
+### Installationon on OFFSITE_SERVER
 ```
 cp remember-tunnel/etc/init.d/remember-tunnel  /etc/init.d/remember-tunnel
 cp remember-tunnel/etc/default/remember-tunnel /etc/default/remember-tunnel
@@ -22,25 +22,24 @@ update-rc.d remember-tunnel defaults
 service remember-tunnel start
 ```
 
-### Example usage from ONSITE_SERVER:
+### Example usage from ONSITE_SERVER
 ```
 ssh -p 2222 localhost
 This starts an ssh session from ONSITE_SERVER through the reverse SSH tunnel to OFFSITE_SERVER.
 ```
 
-### Assumptions:
-1a. On-site firewall and router are owned by the admin configuring this service.
-1b. On-site firewall can be configured to support incoming SSH connections to ONSITE_SERVER. 
-2a. Off-site firewall and router are owned by someone else and cannot be configured.
-2b. Off-site firewall supports outgoing SSH connections from OFFISTE_SERVER. This holds true for most default configurations of consumer firewall/router devices.
+### Assumptions
+1. On-site firewall and router are owned by the admin configuring this service.
+2. On-site firewall can be configured to support incoming SSH connections to ONSITE_SERVER. 
+3. Off-site firewall and router are owned by someone else and cannot be configured.
+4. Off-site firewall supports outgoing SSH connections from OFFISTE_SERVER. This holds true for most default configurations of consumer firewall/router devices.
 
 ## remember-backup
 With the remember-tunnel active it is possible to use several exisiting backup tools through the SSH tunnel. This script package is describes the use of remember-backup.sh and remember-rotate.sh for backup. The backup is based on rsync with hard-links to create complete, browsable backups with minimal bandwidth usage.   
 
 TODO: Describe usage
 
-remember-restore
-===============
+## remember-restore
 With the remember-tunnel active it is possible to use several exisiting restore tools through the SSH tunnel. This script package is describes the use of either rsync of sshfs for restore.
 
 Assumption:
