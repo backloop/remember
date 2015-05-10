@@ -1,6 +1,6 @@
 # Defines the user executing the daemon on OFFSITE_SERVER.
 # Must be the user having it's public keys shared on ONSITE_SERVER.
-OFFSITE_USER=databackup
+#OFFSITE_USER=root
 
 # Defines the port used when accessing the reverse tunnel 
 # from within ONSITE_SERVER.
@@ -16,4 +16,4 @@ OFFSITE_USER=databackup
 
 # Defines ONSITE_SERVER's public IP address or hostname. Used by OFFSITE_SERVER
 # to setup the reverse tunnel.
-ONSITE_HOSTNAME=192.168.0.40
+ONSITE_HOSTNAME=
