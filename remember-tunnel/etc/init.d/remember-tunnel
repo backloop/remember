@@ -43,11 +43,11 @@ SCRIPTNAME=/etc/init.d/$NAME
 . /lib/lsb/init-functions
 
 # defaults for start-stop-daemon
-${OFFSITE_USER:=root}
-${ONSITE_USER:=root}
-${ONSITE_REVERSE_PORT:=2222}
-${ONSITE_FORWARD_PORT:=22}
-[ -n "$ONSITE_HOSTNAME" ] && return 2
+: ${OFFSITE_USER:=root}
+: ${ONSITE_USER:=root}
+: ${ONSITE_REVERSE_PORT:=2222}
+: ${ONSITE_FORWARD_PORT:=22}
+[ -z "$ONSITE_HOSTNAME" ] && exit 2
 
 # Define the arguments for the daemon
 # ServerAliveInterval option is only available in SSH version 2
