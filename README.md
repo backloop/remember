@@ -23,9 +23,9 @@ service remember-tunnel start
 ```
 
 ### Example usage from ONSITE_SERVER
+This example starts a ssh session from ONSITE_SERVER through the reverse SSH tunnel to OFFSITE_SERVER.
 ```
 ssh -p 2222 localhost
-This starts an ssh session from ONSITE_SERVER through the reverse SSH tunnel to OFFSITE_SERVER.
 ```
 
 ### Assumptions
