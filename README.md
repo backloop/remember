@@ -11,7 +11,7 @@ The OFFSITE_SERVER is an off-site backup server located somewhere far away and t
 
 ### Pre-requisites
 * autossh package must be installed
-* Automated login from OFFISTE_SERVER to ONSITE_SERVER must be configured (public keys must be shared from OFFISTE_SERVER to ONSITE_SERVER and known_hosts file on OFFSITE_SERVER must be updated with ONSITE_SERVER's public credentials). The most straight forward method is to manually configure a normal ssh login from OFFSITE_SERVER to ONSITE_SERVER that can be performed without user interaction.  
+* Automated login from OFFSITE_SERVER to ONSITE_SERVER must be configured (public keys must be shared from OFFSITE_SERVER to ONSITE_SERVER and known_hosts file on OFFSITE_SERVER must be updated with ONSITE_SERVER's public credentials). The most straight forward method is to manually configure a normal ssh login from OFFSITE_SERVER to ONSITE_SERVER that can be performed without user interaction.  
 
 ### Installationon on OFFSITE_SERVER
 ```
@@ -25,7 +25,7 @@ service remember-tunnel start
 ### Example usage from ONSITE_SERVER
 This example starts a ssh session from ONSITE_SERVER through the reverse SSH tunnel to OFFSITE_SERVER.
 ```
-ssh -p 2222 localhost
+ssh -p 2222 <offsite username>@localhost
 ```
 
 ### Assumptions
@@ -36,6 +36,9 @@ ssh -p 2222 localhost
 
 ## remember-backup
 With the remember-tunnel active it is possible to use several exisiting backup tools through the SSH tunnel. This script package is describes the use of remember-backup.sh for backup. The backup is based on rsync with hard-links to create complete, browsable backups with minimal bandwidth usage. Configurable backup rotation is also implemented.   
+
+### Pre-requisites
+* Automated login from ONSITE_SERVER to OFFSITE_SERVER though the reverse SSH tunnel must be configured (public keys must be shared from ONSITE_SERVER to OFFSITE_SERVER and known_hosts file on ONSITE_SERVER must be updated). The most straight forward method is to manually configure a normal ssh login from ONSITE_SERVER to OFFSITE_SERVER through the reverse SSH tunnel that can be performed without user interaction.  
 
 TODO: Describe usage
 
