@@ -2,7 +2,7 @@
 Remote backup tool based on standard tools, with automatic rotation and minimal offsite server configuration 
 
 ## remember-tunnel
-The tool is excuted on the OFFISTE_SERVER and sets up a persistent reverse SSH tunnel from ONSITE_SERVER to OFFSITE_SERVER. The underlying concept is that the OFFSITE_LAN configuration does not need to be changed, only ONSITE_LAN needs configuring. Also the OFFISTE_SERVER's public domain name or IP address needs not to be known in beforehand. Only ONSITE_SERVER's public domain name or IP address needs to be known (to initially set up the SSH tunnel).
+The tool is executed on the OFFISTE_SERVER and sets up a persistent reverse SSH tunnel from ONSITE_SERVER to OFFSITE_SERVER. The underlying concept is that the OFFSITE_LAN configuration does not need to be changed, only ONSITE_LAN needs configuring. Also the OFFISTE_SERVER's public domain name or IP address needs not to be known in beforehand. Only ONSITE_SERVER's public domain name or IP address needs to be known (to initially set up the SSH tunnel).
 
 Essentially this sets up a "call home" feature.
 
