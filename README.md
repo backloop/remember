@@ -35,7 +35,7 @@ ssh -p 2222 localhost
 4. Off-site firewall supports outgoing SSH connections from OFFISTE_SERVER. This holds true for most default configurations of consumer firewall/router devices.
 
 ## remember-backup
-With the remember-tunnel active it is possible to use several exisiting backup tools through the SSH tunnel. This script package is describes the use of remember-backup.sh and remember-rotate.sh for backup. The backup is based on rsync with hard-links to create complete, browsable backups with minimal bandwidth usage.   
+With the remember-tunnel active it is possible to use several exisiting backup tools through the SSH tunnel. This script package is describes the use of remember-backup.sh for backup. The backup is based on rsync with hard-links to create complete, browsable backups with minimal bandwidth usage. Configurable backup rotation is also implemented.   
 
 TODO: Describe usage
 
