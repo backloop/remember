@@ -1,0 +1,1 @@
+REMEMBER_OFFSITE_USER ALL=NOPASSWD: /usr/bin/rsync
