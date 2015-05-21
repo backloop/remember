@@ -1,0 +1,22 @@
+
+1. 
+These test scripts setup a file structure that remember-rotate.sh can 
+operate on. Each test file structure is tailored to test a specific 
+function of remember-rotate.sh  
+
+2.
+The unittest syntax check can be verified by executing check-unittest-syntax.sh.
+Please monitor the output for syntax errors.
+
+    remember-backup$ ./check-unittest-syntax.sh
+
+3.
+These tests are not meant to be run unattended, there is no analysis of the 
+results implemented. See the proper usage of the unittests below. The analysis 
+consists of observing the file structure changes before and after excution of 
+remember-rotate.sh.
+    
+    remember-backup$ unittest/test-<of choice>.sh
+    remember-backup$ ls -al unittest/test*
+    remember-backup$ ./remember.rotate.sh
+    remember-backup$ ls -al unittest/test*
