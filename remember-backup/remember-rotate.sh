@@ -1,10 +1,9 @@
 #!/bin/bash 
 
-#TODO: read parameters from configfile add CURRENT...
-
 if (( $# == 0 )); then
     echo -n "Reading configuration from file..."
-    if source $(readlink -f $0 | xargs dirname)/remember-rotate.conf 2>/dev/null; then
+    source $(readlink -f $0 | xargs dirname)/remember-rotate.conf 2>/dev/null
+    if (( $? != 0 )); then
         echo " FAIL"
         echo "Could not load configuration file. Abort."
         exit 1
@@ -88,7 +87,7 @@ do_rotate() {
     
     # store
     if [ ! -e $directory/$template.0 ]; then
-        cp -r -l $REMEMBER_CURRENT $directory/$template.0
+        cp -r -l -p $REMEMBER_CURRENT $directory/$template.0
     else
         echo "Rotation of the daily content failed. Abort."
         exit 1
