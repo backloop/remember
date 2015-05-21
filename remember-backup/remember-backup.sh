@@ -138,4 +138,18 @@ if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "mv $R
 fi
 echo " OK"
 
+echo -n "Total backup size: "
+if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "du -sh $REMEMBER_BASEPATH | cut -f 1"; then
+    echo " FAIL"
+    echo "Failed while examining total backup size. Abort."
+    exit 1
+fi
+
+echo -n "Total disk usage: "
+if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "df $REMEMBER_BASEPATH | tail -1 | sed 's/^.* \([0-9]*%\).*$/\1/g'"; then
+    echo " FAIL"
+    echo "Failed while examining total disk usage. Abort."
+    exit 1
+fi
+
 # TODO: encrypt backup

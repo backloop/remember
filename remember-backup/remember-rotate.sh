@@ -1,9 +1,6 @@
 #!/bin/bash 
 
-# TODO:
-# * implement "du -sh" on remote filesystem
-
-#TODO: read parameters from configfile add CURRENT and LAST...
+#TODO: read parameters from configfile add CURRENT...
 
 if (( $# == 0 )); then
     echo -n "Reading configuration from file..."
