@@ -7,17 +7,19 @@ if [ ! $? = 0 ]; then
     echo "Could not load configuration file. Abort."
     exit 1
 fi
+echo " OK"
 
 # set default values
 : ${REMEMBER_ONSITE_REVERSE_PORT:=2222}
 : ${REMEMBER_OFFSITE_USER:=root}
 
-# check that the SSH tunnel exists
+echo -n "Check that the reverse SSH tunnel exists"
 if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost exit; then
     echo " FAIL"
     echo "Reverse SSH tunnel not active. Abort."
     exit 1
 fi
+echo " OK"
 
 echo -n "Check local directory..."
 if [ ! -d $REMEMBER_SOURCE ]; then
