@@ -1,15 +1,25 @@
 #!/bin/bash 
 
 # TODO:
-# * rotate on remote filesystemi through reverse ssh tunnel
 # * implement "du -sh" on remote filesystem
 
-echo -n "Reading configuration..."
-. $(readlink -f $0 | xargs dirname)/remember-rotate.conf 2>/dev/null
-if [ ! $? = 0 ]; then
-    echo " FAIL"
-    echo "Could not load configuration file. Abort."
-    exit 1
+#TODO: read parameters from configfile add CURRENT and LAST...
+
+if (( $# == 0 )); then
+    echo -n "Reading configuration from file..."
+    if source $(readlink -f $0 | xargs dirname)/remember-rotate.conf 2>/dev/null; then
+        echo " FAIL"
+        echo "Could not load configuration file. Abort."
+        exit 1
+    fi
+else
+    echo -n "Reading configuration from command line..."
+    REMEMBER_BASEPATH=$1
+    REMEMBER_CURRENT=$2
+    REMEMBER_MAX_DAILY=$4
+    REMEMBER_MAX_WEEKLY=$5
+    REMEMBER_MAX_MONTHLY=$6
+    REMEMBER_MAX_YEARLY=$7
 fi
 
 orig_basepath=$REMEMBER_BASEPATH
@@ -28,9 +38,8 @@ fi
 : ${REMEMBER_MAX_WEEKLY:=52}
 : ${REMEMBER_MAX_MONTHLY:=12}
 : ${REMEMBER_MAX_YEARLY:=99}
+: ${REMEMBER_CURRENT:=$REMEMBER_BASEPATH/current}
 
-REMEMBER_CURRENT=$REMEMBER_BASEPATH/current
-REMEMBER_LAST=$REMEMBER_BASEPATH/last
 REMEMBER_DIR_DAILY=$REMEMBER_BASEPATH/daily
 REMEMBER_DIR_WEEKLY=$REMEMBER_BASEPATH/weekly
 REMEMBER_DIR_MONTHLY=$REMEMBER_BASEPATH/monthly
@@ -57,7 +66,7 @@ echo " OK"
 echo -n "Checking file structure..."
 for directory in $REMEMBER_DIR_DAILY $REMEMBER_DIR_WEEKLY $REMEMBER_DIR_MONTHLY $REMEMBER_DIR_YEARLY; do
     template=$(basename $directory)
-    count=$(ls -1 $directory/$template.* 2>/dev/null | wc -l)
+    count=$(find $directory -maxdepth 1 -name $template.* | wc -l)
     for i in $( seq 0 1 $((count - 1)) ); do
         if [ ! -e $directory/$template.$i ]; then
             echo " FAIL"
@@ -68,12 +77,12 @@ for directory in $REMEMBER_DIR_DAILY $REMEMBER_DIR_WEEKLY $REMEMBER_DIR_MONTHLY 
 done
 echo " OK"
 
-do_work() {
+do_rotate() {
     directory=$1
     template=$(basename $directory)
     max_count=$2
     
-    count=$(ls -1 $directory/$template.* 2>/dev/null | wc -l)
+    count=$(find $directory -maxdepth 1 -name $template.* | wc -l) 
     
     # rotate
     for i in $( seq $count -1 1 ); do
@@ -82,7 +91,7 @@ do_work() {
     
     # store
     if [ ! -e $directory/$template.0 ]; then
-        cp -l $REMEMBER_CURRENT $directory/$template.0
+        cp -r -l $REMEMBER_CURRENT $directory/$template.0
     else
         echo "Rotation of the daily content failed. Abort."
         exit 1
@@ -114,7 +123,7 @@ fi
 # ROTATE DAILY
 #
 echo -n "Rotating daily..."
-do_work $REMEMBER_DIR_DAILY $REMEMBER_MAX_DAILY 
+do_rotate $REMEMBER_DIR_DAILY $REMEMBER_MAX_DAILY 
 echo " OK"
 
 #
@@ -122,7 +131,7 @@ echo " OK"
 #
 echo -n "Rotating weekly..."
 if (( $(date -r $REMEMBER_CURRENT +%u) == 7 )); then
-    do_work $REMEMBER_DIR_WEEKLY $REMEMBER_MAX_WEEKLY
+    do_rotate $REMEMBER_DIR_WEEKLY $REMEMBER_MAX_WEEKLY
     echo " OK"
 else
     echo " Nothing to do."
@@ -136,8 +145,10 @@ currentmonth=$(date -r $REMEMBER_CURRENT +%m)
 currentyear=$(date -r $REMEMBER_CURRENT +%Y)
 lastdayofcurrentmonth=$(date -d "$currentmonth/1/$currentyear + 1 month - 1 day" +%d)
 echo -n "Rotating monthly..."
+currentdayofmonth=$(( 10#$currentdayofmonth ))
+lastdayofcurrentmonth=$(( 10#$lastdayofcurrentmonth ))
 if (( $currentdayofmonth == $lastdayofcurrentmonth )); then
-    do_work $REMEMBER_DIR_MONTHLY $REMEMBER_MAX_MONTHLY
+    do_rotate $REMEMBER_DIR_MONTHLY $REMEMBER_MAX_MONTHLY
     echo " OK"
 else
     echo " Nothing to do."
@@ -150,7 +161,7 @@ currentdayofmonth=$(date -r $REMEMBER_CURRENT +%d)
 currentmonth=$(date -r $REMEMBER_CURRENT +%m)
 echo -n "Rotation yearly..."
 if (( $currentmonth == 12 )) && (( $currentdayofmonth == 31 )); then
-    do_work $REMEMBER_DIR_YEARLY $REMEMBER_MAX_YEARLY
+    do_rotate $REMEMBER_DIR_YEARLY $REMEMBER_MAX_YEARLY
     echo " OK"
 else
     echo " Nothing to do."
@@ -166,7 +177,7 @@ do_postcheck() {
     diff_func=$2
     template=$(basename $directory)
     echo -n "Checking consistency of backup schedule in $template..."
-    count=$(ls -1 $directory/$template.* 2>/dev/null | wc -l)
+    count=$(find $directory -maxdepth 1 -name $template.* | wc -l)
     failed=0
     if (( count >= 2 )); then
         # +%F will truncate to whole days, 
@@ -244,11 +255,3 @@ do_postcheck $REMEMBER_DIR_DAILY diff_daily
 do_postcheck $REMEMBER_DIR_WEEKLY diff_weekly
 do_postcheck $REMEMBER_DIR_MONTHLY diff_monthly
 do_postcheck $REMEMBER_DIR_YEARLY diff_yearly
-
-# Consider $REMEMBER_CURRENT as consumed due to the hardlinks to 
-# atleast daily.0. Move to $REMEMBER_LAST so that e.g. hardlinking 
-# rsync backups have something to compare against.
-echo -n "Relocating $REMEMBER_CURRENT to $REMEMBER_LAST..."
-rm -rf $REMEMBER_LAST
-mv $REMEMBER_CURRENT $REMEMBER_LAST
-echo " OK"
