@@ -7,7 +7,7 @@
 # The correct output is:
 #INFO: Missing 1 backup(s) between daily.0 and daily.1.
 #INFO: Missing 2 backup(s) between daily.2 and daily.3.
-touch -d "5/6/2015" $BASEPATH/current
+touch -d "5/6/2015" $CURRENT
 touch -d "5/4/2015" $DAILY/daily.0 
 touch -d "5/3/2015" $DAILY/daily.1
 touch -d "4/30/2015" $DAILY/daily.2
