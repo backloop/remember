@@ -11,7 +11,7 @@ The OFFSITE_SERVER is an off-site backup server located somewhere far away and t
 
 ### Pre-requisites
 * autossh package must be installed
-* Automated login from OFFSITE_SERVER to ONSITE_SERVER must be configured (public keys must be shared from OFFSITE_SERVER to ONSITE_SERVER and known_hosts file on OFFSITE_SERVER must be updated with ONSITE_SERVER's public credentials). The most straight forward method is to manually configure a normal ssh login from OFFSITE_SERVER to ONSITE_SERVER that can be performed without user interaction.  
+* Automated login from OFFSITE_SERVER to ONSITE_SERVER must be configured (public keys must be shared from OFFSITE_SERVER to ONSITE_SERVER and known_hosts file on OFFSITE_SERVER must be updated with ONSITE_SERVER's public credentials). The most straight forward method is to manually configure a normal ssh login from OFFSITE_SERVER to ONSITE_SERVER that can be executed without user interaction.  
 
 ### Installationon on OFFSITE_SERVER
 ```
@@ -35,10 +35,15 @@ ssh -p 2222 <offsite username>@localhost
 4. Off-site firewall supports outgoing SSH connections from OFFISTE_SERVER. This holds true for most default configurations of consumer firewall/router devices.
 
 ## remember-backup
-With the remember-tunnel active it is possible to use several exisiting backup tools through the SSH tunnel. This script package is describes the use of remember-backup.sh for backup. The backup is based on rsync with hard-links to create complete, browsable backups with minimal bandwidth usage. Configurable backup rotation is also implemented.   
+With the remember-tunnel active it is possible to use several existing backup tools through the SSH tunnel. This script package is describes the use of remember-backup.sh for backup. The backup is based on rsync with hard-links to create complete, browsable backups with minimal bandwidth usage. Configurable backup rotation is also implemented.   
 
 ### Pre-requisites
-* Automated login from ONSITE_SERVER to OFFSITE_SERVER though the reverse SSH tunnel must be configured (public keys must be shared from ONSITE_SERVER to OFFSITE_SERVER and known_hosts file on ONSITE_SERVER must be updated). The most straight forward method is to manually configure a normal ssh login from ONSITE_SERVER to OFFSITE_SERVER through the reverse SSH tunnel that can be performed without user interaction.  
+* Automated login from ONSITE_SERVER to OFFSITE_SERVER though the reverse SSH tunnel must be configured (public keys must be shared from ONSITE_SERVER to OFFSITE_SERVER and known_hosts file on ONSITE_SERVER must be updated). The most straight forward method is to manually configure a normal ssh login from ONSITE_SERVER to OFFSITE_SERVER through the reverse SSH tunnel that can be executed without user interaction.
+* On OFFSITE_SERVER
+```
+ $ cp 01_rememeber-backup.template /etc/suders.d/01_remember-backup
+ $ sed -i "s/REMEMBER_OFFSITE_USER/your offsite username/" /etc/suders.d/01_remember-backup
+```
 
 TODO: Describe usage
 
