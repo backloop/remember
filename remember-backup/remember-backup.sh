@@ -13,8 +13,10 @@ echo " OK"
 : ${REMEMBER_ONSITE_REVERSE_PORT:=2222}
 : ${REMEMBER_OFFSITE_USER:=root}
 
+REMOTE_CMD="ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost"
+
 echo -n "Check that the reverse SSH tunnel exists"
-if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost exit; then
+if ! $REMOTE_CMD "exit"; then
     echo " FAIL"
     echo "Reverse SSH tunnel not active. Abort."
     exit 1
@@ -32,7 +34,7 @@ echo " OK"
 #TODO: decrypt backup at some early stage
 
 echo -n "Check remote base directory..."
-if ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "[ ! -d $REMEMBER_BASEPATH ]"; then
+if $REMOTE_CMD "[ ! -d $REMEMBER_BASEPATH ]"; then
     echo " FAIL"
     echo "Missing remote directory \"$REMEMBER_BASEPATH\". Abort."
     exit 1
@@ -44,15 +46,15 @@ REMEMBER_DEST=$REMEMBER_BASEPATH/current
 # "current" directory should not exist after a successful backup.
 # if it exists then it is stale and should be removed to avoid
 # confusing rsync with old content
-if ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "[ -d $REMEMBER_DEST ]"; then
-    if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "rm -rf $REMEMBER_DEST"; then
+if $REMOTE_CMD "[ -d $REMEMBER_DEST ]"; then
+    if ! $REMOTE_CMD "rm -rf $REMEMBER_DEST"; then
         echo " FAIL"
         echo "Failed in removing stale remote directory \"$REMEMBER_DEST\". Abort."
         exit 1
     fi
 fi
 
-if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "mkdir $REMEMBER_DEST"; then
+if ! $REMOTE_CMD "mkdir $REMEMBER_DEST"; then
     echo " FAIL"
     echo "Creating remote directory \"$REMEMBER_DEST\" failed. Abort."
     exit 1
@@ -63,8 +65,8 @@ echo -n "Check remote destination directory (previous)..."
 REMEMBER_LINKDEST=$REMEMBER_BASEPATH/previous
 # "previous" directory contains last successful backup, if it does not exist
 # then create an empty directory for rsync to diff against
-if ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "[ ! -d $REMEMBER_LINKDEST ]"; then
-    if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "mkdir $REMEMBER_LINKDEST"; then
+if $REMOTE_CMD "[ ! -d $REMEMBER_LINKDEST ]"; then
+    if ! $REMOTE_CMD "mkdir $REMEMBER_LINKDEST"; then
         echo " FAIL"
         echo "Creating remote directory \"$REMEMBER_LINKDEST\" failed. Abort."
         exit 1
@@ -74,7 +76,7 @@ echo " OK"
 
 echo -n "Checking remote rsync permissions..."
 REMEMBER_RSYNC_PERMISSION=/etc/sudoers.d/01_remember-backup
-if ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "[ ! -e $REMEMBER_RSYNC_PERMISSION ]"; then
+if $REMOTE_CMD "[ ! -e $REMEMBER_RSYNC_PERMISSION ]"; then
     echo " FAIL"
     echo "Missing rsync permission file $REMEMBER_RSYNC_PERMISSION. Manually copy to remote machine. Abort."
     exit 1
@@ -89,7 +91,6 @@ if ! rsync --archive \
            --delete-before --delete-excluded --prune-empty-dirs \
            --link-dest=$REMEMBER_LINKDEST \
            $REMEMBER_SOURCE $REMEMBER_OFFSITE_USER@localhost:$REMEMBER_DEST; then
-#if (( $? != 0 )); then
     echo " FAIL"
     exit 1
 fi
@@ -104,14 +105,14 @@ fi
 echo " OK"
 
 REMEMBER_MAX_ROTATE="$REMEMBER_MAX_DAILY,$REMEMBER_MAX_WEEKLY,$REMEMBER_MAX_MONTHLY,$REMEMBER_MAX_YEARLY"
-if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "$REMEMBER_ROTATE $REMEMBER_BASEPATH $REMEMBER_DEST $REMEMBER_MAX_ROTATE"; then
+if ! $REMOTE_CMD "$REMEMBER_ROTATE $REMEMBER_BASEPATH $REMEMBER_DEST $REMEMBER_MAX_ROTATE"; then
     echo " FAIL"
     echo "Failed execution of $REMEMBER_ROTATE. Abort."
     exit 1
 fi
 
 echo -n "Cleaning up..."
-if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "rm $REMEMBER_ROTATE"; then
+if ! $REMOTE_CMD "rm $REMEMBER_ROTATE"; then
     echo " FAIL"
     echo "Failed removal of $REMEMBER_ROTATE. Abort."
     exit 1
@@ -120,13 +121,13 @@ fi
 # Consider $REMEMBER_CURRENT as consumed due to the hardlinks to atleast daily.0 
 # in the rotated structure. Move to $REMEMBER_LAST so that e.g. hardlinking 
 # rsync backups have something to compare against.
-if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "rm -rf $REMEMBER_LINKDEST"; then
+if ! $REMOTE_CMD "rm -rf $REMEMBER_LINKDEST"; then
     echo " FAIL"
     echo "Failed while removing $REMEMBER_LINKDEST. Abort."
     exit 1
 fi
 
-if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "mv $REMEMBER_DEST $REMEMBER_LINKDEST"; then
+if ! $REMOTE_CMD "mv $REMEMBER_DEST $REMEMBER_LINKDEST"; then
     echo " FAIL"
     echo "Failed while moving $REMEMBER_DEST. Abort."
     exit 1
@@ -134,14 +135,14 @@ fi
 echo " OK"
 
 echo -n "Total backup size: "
-if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "du -sh $REMEMBER_BASEPATH | cut -f 1"; then
+if ! $REMOTE_CMD "du -sh $REMEMBER_BASEPATH | cut -f 1"; then
     echo " FAIL"
     echo "Failed while examining total backup size. Abort."
     exit 1
 fi
 
 echo -n "Total disk usage: "
-if ! ssh -p$REMEMBER_ONSITE_REVERSE_PORT $REMEMBER_OFFSITE_USER@localhost "df $REMEMBER_BASEPATH | tail -1 | sed 's/^.* \([0-9]*%\).*$/\1/g'"; then
+if ! $REMOTE_CMD "df $REMEMBER_BASEPATH | tail -1 | sed 's/^.* \([0-9]*%\).*$/\1/g'"; then
     echo " FAIL"
     echo "Failed while examining total disk usage. Abort."
     exit 1
