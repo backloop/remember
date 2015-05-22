@@ -12,10 +12,14 @@ else
     echo -n "Reading configuration from command line..."
     REMEMBER_BASEPATH=$1
     REMEMBER_CURRENT=$2
-    REMEMBER_MAX_DAILY=$4
-    REMEMBER_MAX_WEEKLY=$5
-    REMEMBER_MAX_MONTHLY=$6
-    REMEMBER_MAX_YEARLY=$7
+    OLD_IFS=$IFS
+    IFS=","
+    arr=($3)
+    REMEMBER_MAX_DAILY=${arr[0]}
+    REMEMBER_MAX_WEEKLY=${arr[1]}
+    REMEMBER_MAX_MONTHLY=${arr[2]}
+    REMEMBER_MAX_YEARLY=${arr[3]}
+    IFS=$OLD_IFS
 fi
 
 orig_basepath=$REMEMBER_BASEPATH
