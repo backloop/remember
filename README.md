@@ -4,7 +4,7 @@
 Remote backup tool based on standard tools, with automatic rotation and minimal offsite machine configuration 
 
 ## remember-tunnel
-The tool is executed on the offsite machine and sets up a persistent reverse SSH tunnel to the onsite machine. The underlying concept is that the offsite LAN configuration does not need to be changed, only onsite LAN needs configuring. Also the offsite machine's public domain name or IP address does not need to be known in beforehand. Only onsite machine's public domain name or IP address needs to be known (to initially set up the SSH tunnel).
+The tool is a daemon executed on the offsite machine and sets up a persistent reverse SSH tunnel to the onsite machine. The underlying concept is that the offsite LAN configuration does not need to be changed, only onsite LAN needs configuring. Also the offsite machine's public domain name or IP address does not need to be known in beforehand. Only onsite machine's public domain name or IP address needs to be known (to initially set up the SSH tunnel).
 
 Essentially this sets up a "call home" feature.
 
@@ -26,7 +26,7 @@ Make changes to fit your configuration
 ```
 # vi /etc/default/remember-tunnel
 ```
-Register and start the service
+Register and start the daemon
 ```
 # update-rc.d remember-tunnel defaults
 # service remember-tunnel start
@@ -39,7 +39,7 @@ ssh -p 2222 offsite-username@localhost
 ```
 
 #### Assumptions
-1. Onsite firewall and router are owned by the admin configuring this service.
+1. Onsite firewall and router are owned by the admin configuring this daemon.
 2. Onsite firewall can be configured to support incoming SSH connections to onsite machine. 
 3. Offsite firewall and router are owned by someone else and cannot be configured.
 4. Offsite firewall supports outgoing SSH connections from offsite machine. This holds true for most default configurations of consumer firewall/router devices.
