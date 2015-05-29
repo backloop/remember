@@ -1,3 +1,5 @@
+**WORK IN PROGRESS - HEAD IN NOT FUNCTIONAL**
+
 # remember
 Remote backup tool based on standard tools, with automatic rotation and minimal offsite machine configuration 
 
@@ -6,15 +8,15 @@ The tool is executed on the offsite machine and sets up a persistent reverse SSH
 
 Essentially this sets up a "call home" feature.
 
-### Example
+#### Example
 The offsite machine is an offsite backup server located somewhere far away and the onsite machine is a file server on your home or office LAN.
 
-### Pre-requisites
+#### Pre-requisites
 * Offsite machine: autossh package must be installed
 * Onsite LAN: Allow incoming SSH connections from offsite machine to onsite machine
 * Automated login from the offsite machine to the onsite machine must be configured (public keys must be shared for the correct user on the offsite machine to the correct user on the onsite machine. Also, the known_hosts file on offsite machine must be updated with onsite machine's public credentials). The most straight forward method is to manually configure a normal ssh login from the offsite machine to the onsite machine that can be executed without user interaction.
 
-### Installation on offsite machine
+#### Installation on offsite machine
 ```
 cp remember-tunnel/etc/init.d/remember-tunnel  /etc/init.d/remember-tunnel
 cp remember-tunnel/etc/default/remember-tunnel /etc/default/remember-tunnel
@@ -23,44 +25,48 @@ update-rc.d remember-tunnel defaults
 service remember-tunnel start
 ```
 
-### Example usage from onsite machine
+#### Example usage from onsite machine
 This example starts a ssh session from onsite machine through the reverse SSH tunnel to offsite machine.
 ```
 ssh -p 2222 offsite-username@localhost
 ```
 
-### Assumptions
+#### Assumptions
 1. Onsite firewall and router are owned by the admin configuring this service.
 2. Onsite firewall can be configured to support incoming SSH connections to onsite machine. 
 3. Offsite firewall and router are owned by someone else and cannot be configured.
 4. Offsite firewall supports outgoing SSH connections from offsite machine. This holds true for most default configurations of consumer firewall/router devices.
 
 ## remember-backup
-With the remember-tunnel active it is possible to use several existing backup tools through the SSH tunnel. This script package is describes the use of remember-backup.sh for backup. The backup is based on rsync with hard-links to create complete, browsable backups with minimal bandwidth usage. Configurable backup rotation is also implemented.   
+With the remember-tunnel active it is possible to use several existing backup tools through the SSH tunnel. This script package is describes the use of remember-backup.sh for backup. 
+* eCryptfs is used for securing the offsite content.
+* Rsync is used with hard-links to create a complete, browsable set of backups with minimal bandwidth usage.
+* Custom configurable backup rotation is implemented.   
 
-### Pre-requisites
-* Automated login from the onsite machine to the offsite machine though the reverse SSH tunnel must be configured (public keys must be shared for the correct user on the onsite machine to the correct user on the offsite machine. Also, the known_hosts file on onsite machine must be updated). The most straight forward method is to manually configure a normal ssh login from the onsite machine to the offsite machine that can be executed without user interaction.
+#### Pre-requisites
+1. Automated login from the onsite machine to the offsite machine though the reverse SSH tunnel must be configured (public keys must be shared for the correct user on the onsite machine to the correct user on the offsite machine. Also, the known_hosts file on onsite machine must be updated). The most straight forward method is to manually configure a normal ssh login from the onsite machine to the offsite machine that can be executed without user interaction.
+2. An eCryptfs storage must be created that is compatible with maount.ecryptfs_private (*.conf and *.sig files)
 
-### Installation on offsite machine
+#### Installation on offsite machine
 ```
  $ cp 01_rememeber-backup.template /etc/suders.d/01_remember-backup
  $ sed -i "s/REMEMBER_OFFSITE_USER/your offsite username/" /etc/suders.d/01_remember-backup
 ```
 
-### Installation on onsite machine
+#### Installation on onsite machine
 TODO
 
-### Example usage from onsite machine
+#### Example usage from onsite machine
 TODO cron example
 
 ## remember-restore
 With the remember-tunnel active it is possible to use several exisiting restore tools through the SSH tunnel. This script package is describes the use of either rsync of sshfs for restore.
 
-Assumption:
+#### Assumption
 Restoring files on the onsite machine is performed by an admin with root priviledges. The setup is not intended for multiple end users restoring their own files.
 
-### Pre-requisites
+#### Pre-requisites
 TODO
 
-### Example usage from onsite machine
+#### Example usage from onsite machine
 TODO
