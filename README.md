@@ -17,12 +17,19 @@ The offsite machine is an offsite backup server located somewhere far away and t
 * Automated login from the offsite machine to the onsite machine must be configured (public keys must be shared for the correct user on the offsite machine to the correct user on the onsite machine. Also, the known_hosts file on offsite machine must be updated with onsite machine's public credentials). The most straight forward method is to manually configure a normal ssh login from the offsite machine to the onsite machine that can be executed without user interaction.
 
 #### Installation on offsite machine
+Copy the necessary files
 ```
-cp remember-tunnel/etc/init.d/remember-tunnel  /etc/init.d/remember-tunnel
-cp remember-tunnel/etc/default/remember-tunnel /etc/default/remember-tunnel
-# make changes to /etc/default/remember-tunnel to fit your configuration
-update-rc.d remember-tunnel defaults
-service remember-tunnel start
+# cp remember-tunnel/etc/init.d/remember-tunnel  /etc/init.d/remember-tunnel
+# cp remember-tunnel/etc/default/remember-tunnel /etc/default/remember-tunnel
+```
+Make changes to fit your configuration
+```
+# vi /etc/default/remember-tunnel
+```
+Register and start the service
+```
+# update-rc.d remember-tunnel defaults
+# service remember-tunnel start
 ```
 
 #### Example usage from onsite machine
