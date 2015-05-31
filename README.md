@@ -92,7 +92,7 @@ Make changes to fit your configuration
 ```
 # vi remember-backup/remember-backup.conf
 ```
-Create a cron schedule for your onsite user
+Create a cron entry for your onsite user
 ```
 # crontab -u your-onsite-username -e
 ```
