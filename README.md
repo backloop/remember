@@ -75,6 +75,16 @@ With the remember-tunnel active it is possible to use several existing backup to
 * Rsync is used with hard-links to create backups thate are full, browsable with minimal bandwidth usage.
 * Custom configurable backup rotation.   
 
+#### Installation on offsite machine
+Enable rsync to run with elevated priviledges without asking for passwords
+```
+# su your-offsite-username
+$ cp remember-backup/01_rememeber-backup.template /etc/suders.d/01_remember-backup
+$ sed -i "s/REMEMBER_OFFSITE_USER/your-offsite-username/" /etc/suders.d/01_remember-backup
+$ exit
+```
+Create an eCryptfs storage that is compatible with mount.ecryptfs_private. Follow the instructions at the [eCryptfs wiki 'With eCryptfs-utils'](https://wiki.archlinux.org/index.php/ECryptfs#With_ecryptfs-utils)
+
 #### Installation on onsite machine
 Create ssh keys for your non-priviledged user
 ```
@@ -100,16 +110,6 @@ Add the following to execute the backup every day.
 ```
 00 01 * * * /path-to-remember-backup/remember-backup.sh
 ```
-
-#### Installation on offsite machine
-Enable rsync to run with elevated priviledges without asking for passwords
-```
-# su your-offsite-username
-$ cp remember-backup/01_rememeber-backup.template /etc/suders.d/01_remember-backup
-$ sed -i "s/REMEMBER_OFFSITE_USER/your-offsite-username/" /etc/suders.d/01_remember-backup
-$ exit
-```
-Create an eCryptfs storage that is compatible with mount.ecryptfs_private. Follow the instructions at the [eCryptfs wiki 'With eCryptfs-utils'](https://wiki.archlinux.org/index.php/ECryptfs#With_ecryptfs-utils)
 
 ## remember-restore
 With the remember-tunnel active it is possible to use several exisiting restore tools through the SSH tunnel. This script package is describes the use of either rsync of sshfs for restore.
