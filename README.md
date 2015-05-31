@@ -22,7 +22,6 @@ Install the ssh daemon
 Create a non-priviledged user
 ```
 # adduser your-onsite-username
-# 
 ```
 
 #### Installation on offsite machine
@@ -35,11 +34,13 @@ Create a non-priviledged user
 # adduser your-offsite-username
 # su your-offsite-username
 $ ssh-keygen
+$ exit
 ```
-Configure automatic login to onsite machine (copies ssh keys and forces a known_hosts file update)
+Configure unattended login to onsite machine (copies ssh keys and forces a known_hosts file update)
 ```
 # su your-offsite-username
 $ ssh-copy-id your-onsite-username@your-onsite-machine-hostname
+$ exit
 ```
 Copy the necessary files
 ```
@@ -57,12 +58,12 @@ Register and start the daemon
 ```
 
 #### Example usage from onsite machine
-This example starts a ssh session from onsite machine through the reverse SSH tunnel to offsite machine.
+This example starts a ssh session from onsite machine through the reverse SSH tunnel to offsite machine. This command may force an update of the known_hosts file.
 ```
-$ ssh -p 2222 offsite-username@localhost
+$ ssh -p 2222 your-offsite-username@localhost
 ```
 
-#### Assumptions
+#### General Assumptions
 1. Onsite firewall and router are owned by the admin configuring this daemon.
 2. Onsite firewall can be configured to support incoming SSH connections to onsite machine. 
 3. Offsite firewall and router are owned by someone else and cannot be configured.
@@ -71,24 +72,44 @@ $ ssh -p 2222 offsite-username@localhost
 ## remember-backup
 With the remember-tunnel active it is possible to use several existing backup tools through the SSH tunnel. This script package is describes the use of remember-backup.sh for backup. 
 * eCryptfs is used for securing the offsite content.
-* Rsync is used with hard-links to create a complete, browsable set of backups with minimal bandwidth usage.
-* Custom configurable backup rotation is implemented.   
-
-#### Pre-requisites
-1. Automated login from the onsite machine to the offsite machine though the reverse SSH tunnel must be configured (public keys must be shared for the correct user on the onsite machine to the correct user on the offsite machine. Also, the known_hosts file on onsite machine must be updated). The most straight forward method is to manually configure a normal ssh login from the onsite machine to the offsite machine that can be executed without user interaction.
-2. An eCryptfs storage must be created that is compatible with maount.ecryptfs_private (*.conf and *.sig files)
-
-#### Installation on offsite machine
-```
- $ cp 01_rememeber-backup.template /etc/suders.d/01_remember-backup
- $ sed -i "s/REMEMBER_OFFSITE_USER/your offsite username/" /etc/suders.d/01_remember-backup
-```
+* Rsync is used with hard-links to create backups thate are full, browsable with minimal bandwidth usage.
+* Custom configurable backup rotation.   
 
 #### Installation on onsite machine
-TODO
+Create ssh keys for your non-priviledged user
+```
+# su your-onsite-username
+$ ssh-keygen
+$ exit
+```
+Configure unattended login to offsite machine through the reverse SSH tunnel (copies ssh keys and forces a known_hosts file update)
+```
+# su your-onsite-username
+$ ssh-copy-id -p 2222 your-offsite-username@localhost
+$ exit
+```
+Make changes to fit your configuration
+```
+# vi remember-backup/remember-backup.conf
+```
+Create a cron schedule for your onsite user
+```
+# crontab -u your-onsite-username -e
+```
+Add the following to execute the backup every day.
+```
+00 01 * * * /path-to-remember-backup/remember-backup.sh
+```
 
-#### Example usage from onsite machine
-TODO cron example
+#### Installation on offsite machine
+Enable rsync to run with elevated priviledges without asking for passwords
+```
+# su your-offsite-username
+$ cp remember-backup/01_rememeber-backup.template /etc/suders.d/01_remember-backup
+$ sed -i "s/REMEMBER_OFFSITE_USER/your-offsite-username/" /etc/suders.d/01_remember-backup
+$ exit
+```
+Create an eCryptfs storage that is compatible with mount.ecryptfs_private. Follow the instructions at the [eCryptfs wiki 'With eCryptfs-utils'](https://wiki.archlinux.org/index.php/ECryptfs#With_ecryptfs-utils)
 
 ## remember-restore
 With the remember-tunnel active it is possible to use several exisiting restore tools through the SSH tunnel. This script package is describes the use of either rsync of sshfs for restore.
