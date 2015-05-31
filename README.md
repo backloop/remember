@@ -12,11 +12,33 @@ Essentially this sets up a "call home" feature.
 The offsite machine is an offsite backup server located somewhere far away and the onsite machine is a file server on your home or office LAN.
 
 #### Pre-requisites
-* Offsite machine: autossh package must be installed
-* Onsite LAN: Allow incoming SSH connections from offsite machine to onsite machine
+* The onsite LAN must allow incoming SSH connections from the offsite machine to the onsite machine
+
 * Automated login from the offsite machine to the onsite machine must be configured (public keys must be shared for the correct user on the offsite machine to the correct user on the onsite machine. Also, the known_hosts file on offsite machine must be updated with onsite machine's public credentials). The most straight forward method is to manually configure a normal ssh login from the offsite machine to the onsite machine that can be executed without user interaction.
 
+#### Installation on onsite machine
+Install the ssh daemon
+```
+# apt-get install ssh
+```
+Create a non-priviledged user
+```
+# adduser your-onsite-username
+# 
+```
+
 #### Installation on offsite machine
+Install a ssh session management daemon
+```
+# apt-get install autossh
+```
+Create a non-priviledged user
+```
+# adduser your-offsite-username
+# su your-offsite-username
+$ ssh-keygen
+$ ssh-copy-id your-onsite-username@your-onsite-machine-domain
+```
 Copy the necessary files
 ```
 # cp remember-tunnel/etc/init.d/remember-tunnel  /etc/init.d/remember-tunnel
