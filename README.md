@@ -14,8 +14,6 @@ The offsite machine is an offsite backup server located somewhere far away and t
 #### Pre-requisites
 * The onsite LAN must allow incoming SSH connections from the offsite machine to the onsite machine
 
-* Automated login from the offsite machine to the onsite machine must be configured (public keys must be shared for the correct user on the offsite machine to the correct user on the onsite machine. Also, the known_hosts file on offsite machine must be updated with onsite machine's public credentials). The most straight forward method is to manually configure a normal ssh login from the offsite machine to the onsite machine that can be executed without user interaction.
-
 #### Installation on onsite machine
 Install the ssh daemon
 ```
@@ -37,7 +35,11 @@ Create a non-priviledged user
 # adduser your-offsite-username
 # su your-offsite-username
 $ ssh-keygen
-$ ssh-copy-id your-onsite-username@your-onsite-machine-domain
+```
+Configure automatic login to onsite machine (copies ssh keys and forces a known_hosts file update)
+```
+# su your-offsite-username
+$ ssh-copy-id your-onsite-username@your-onsite-machine-hostname
 ```
 Copy the necessary files
 ```
@@ -57,7 +59,7 @@ Register and start the daemon
 #### Example usage from onsite machine
 This example starts a ssh session from onsite machine through the reverse SSH tunnel to offsite machine.
 ```
-ssh -p 2222 offsite-username@localhost
+$ ssh -p 2222 offsite-username@localhost
 ```
 
 #### Assumptions
