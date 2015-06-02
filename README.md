@@ -57,12 +57,6 @@ Register and start the daemon
 # service remember-tunnel start
 ```
 
-#### Example usage from onsite machine
-This example starts a ssh session from onsite machine through the reverse SSH tunnel to offsite machine. This command may force an update of the known_hosts file.
-```
-$ ssh -p 2222 your-offsite-username@localhost
-```
-
 #### General Assumptions
 1. Onsite firewall and router are owned by the admin configuring this daemon.
 2. Onsite firewall can be configured to support incoming SSH connections to onsite machine. 
