@@ -67,10 +67,11 @@ Register and start the daemon
 With the remember-tunnel active it is possible to use several existing backup tools through the SSH tunnel. This script package is describes the use of remember-backup.sh for backup. 
 * eCryptfs is used for securing the offsite content.
 * Rsync is used with hard-links to create backups thate are full, browsable with minimal bandwidth usage.
-* Custom configurable backup rotation.   
+* Custom configurable backup rotation.
+* ACL (Access Control List) is used to limit the need for elevating permissions of the offiste user
 
 #### Installation on offsite machine
-Enable rsync to run with elevated priviledges without asking for passwords
+Enable rsync to run with elevated permissions without asking for passwords
 ```
 # su your-offsite-username
 $ cp remember-backup/01_rememeber-backup.template /etc/suders.d/01_remember-backup
@@ -78,6 +79,16 @@ $ sed -i "s/REMEMBER_OFFSITE_USER/your-offsite-username/" /etc/suders.d/01_remem
 $ exit
 ```
 Create an eCryptfs storage that is compatible with mount.ecryptfs_private. Follow the instructions at the [eCryptfs wiki 'With eCryptfs-utils'](https://wiki.archlinux.org/index.php/ECryptfs#With_ecryptfs-utils)
+
+Use ACL (Access Control List) to allow the offsite user to delete contents within the eCryptfs storage without needing elevated permissions. The reason is that the storage will most likely contain files with different permissions and ownwers. The alternative would be to add the "rm" command to the sudoers configuration file but it would be impossible to restrict the pemissions to the eCryptfs storage alone.
+
+The first part is to [enable ACL](https://wiki.archlinux.org/index.php/Access_Control_Lists#Enabling_ACL) in the underlying filesystem. This can be done in the fstab or on the default mount options for the drive.
+
+The second part is to set the proper ACL permissions for the eCryptfs storage. This will allow your offsite user to delete any of contents in the eCryptfs storage irrespective of the original Linux permissions of the backup files.
+CAVEAT: When restoring a backup the ACL permisssions must be manually cleaned from the permissions that are added below.  
+```
+# setfacl -Rdm "u:your-offsite-username:rwX" /path/to/the/encrypted-ecryptfs-directory
+```
 
 #### Installation on onsite machine
 Create ssh keys for your non-priviledged user
