@@ -1,7 +1,13 @@
 **WORK IN PROGRESS - HEAD IN NOT FUNCTIONAL**
 
 # remember
-Remote backup tool based on standard tools, with automatic rotation and minimal offsite machine configuration 
+Remote backup tool based on standard tools, with automatic rotation and minimal offsite machine configuration.
+
+The initial configuration below might seem extensive, but consider it exhaustive rather than extensive. Mainly the configuration will:
+* setup dedicated users
+* setup automated SSH logins
+* create an encrypted eCryptfs storage for the backup data
+* schedule daily automatic execution of the backup
 
 ## remember-tunnel
 The tool is a daemon executed on the offsite machine and sets up a persistent reverse SSH tunnel to the onsite machine. The underlying concept is that the offsite LAN configuration does not need to be changed, only onsite LAN needs configuring. Also the offsite machine's public domain name or IP address does not need to be known in beforehand. Only onsite machine's public domain name or IP address needs to be known (to initially set up the SSH tunnel).
