@@ -84,10 +84,10 @@ Use ACL (Access Control List) to allow the offsite user to delete contents withi
 
 The first part is to [enable ACL](https://wiki.archlinux.org/index.php/Access_Control_Lists#Enabling_ACL) in the underlying filesystem. This can be done in the fstab or on the default mount options for the drive.
 
-The second part is to set the proper ACL permissions for the eCryptfs storage. This will allow your offsite user to delete any of contents in the eCryptfs storage irrespective of the original Linux permissions of the backup files.
+The second part is to set the default ACL permissions for new directories/files in the eCryptfs storage. This will allow your offsite user to delete any of contents in the eCryptfs storage irrespective of the original Linux permissions of the backup files.
 CAVEAT: When restoring a backup the ACL permisssions must be manually cleaned from the permissions that are added below.  
 ```
-# setfacl -Rdm "u:your-offsite-username:rwX" /path/to/the/encrypted-ecryptfs-directory
+# setfacl -dm "u:your-offsite-username:rwX" /path/to/the/encrypted-ecryptfs-directory
 ```
 
 #### Installation on onsite machine
