@@ -1,4 +1,5 @@
-**DEPRECATED**
+# :no_entry_sign: DEPRECATED
+This tool was never completed or actually used - it is kept in case someone finds parts of the code interesting
 
 # remember
 Remote backup tool based on standard tools, with automatic rotation and minimal offsite machine configuration.
