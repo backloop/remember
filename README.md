@@ -1,4 +1,4 @@
-**WORK IN PROGRESS - HEAD IS IN ALPHA TESTING**
+**DEPRECATED**
 
 # remember
 Remote backup tool based on standard tools, with automatic rotation and minimal offsite machine configuration.
